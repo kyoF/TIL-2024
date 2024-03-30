@@ -1,1 +1,3 @@
-code rust	true
+ddd	true
+rust	true
+dotfiles	true
