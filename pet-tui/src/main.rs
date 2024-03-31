@@ -1,19 +1,41 @@
-use std::{
-    io,
-    sync::mpsc,
-    thread,
-    time::{Duration, Instant},
-};
-
-use chrono::{DateTime, Utc};
+use chrono::prelude::*;
 use crossterm::{
-    event::{self, Event, KeyCode},
-    terminal::enable_raw_mode,
+    event::{self, Event as CEvent, KeyCode},
+    terminal::{disable_raw_mode, enable_raw_mode},
 };
+use rand::{distributions::Alphanumeric, prelude::*};
 use serde::{Deserialize, Serialize};
-use tui::{backend::CrosstermBackend, layout::{Alignment, Constraint, Direction, Layout}, style::{Color, Modifier, Style}, text::{Span, Spans}, widgets::{Block, BorderType, Borders, Paragraph, Tabs}, Terminal};
+use std::fs;
+use std::io;
+use std::sync::mpsc;
+use std::thread;
+use std::time::{Duration, Instant};
+use thiserror::Error;
+use tui::{
+    backend::CrosstermBackend,
+    layout::{Alignment, Constraint, Direction, Layout},
+    style::{Color, Modifier, Style},
+    text::{Span, Spans},
+    widgets::{
+        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs,
+    },
+    Terminal,
+};
 
 const DB_PATH: &str = "./data/db.json";
+
+#[derive(Error, Debug)]
+pub enum Error {
+    #[error("error reading the DB file: {0}")]
+    ReadDBError(#[from] io::Error),
+    #[error("error parsing the DB file: {0}")]
+    ParseDBError(#[from] serde_json::Error),
+}
+
+enum Event<I> {
+    Input(I),
+    Tick,
+}
 
 #[derive(Serialize, Deserialize, Clone)]
 struct Pet {
@@ -22,14 +44,6 @@ struct Pet {
     category: String,
     age: usize,
     created_at: DateTime<Utc>,
-}
-
-#[derive(Error, Debug)]
-pub enum Error {
-    #[error("error reading the DB file: {0}")]
-    ReadDBError(#[from] io::Error),
-    #[error("error parsing the DB file: {0}")]
-    ParseDBError(#[from] serde_json::Error),
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -137,7 +151,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 MenuItem::Home => rect.render_widget(render_home(), chunks[1]),
                 MenuItem::Pets => {},
             }
-        };
+        })?;
 
         match rx.recv()? {
             Event::Input(event) => match event.code {
@@ -153,6 +167,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Event::Tick => {}
         }
     }
+
+    Ok(())
 }
 
 fn render_home<'a>() -> Paragraph<'a> {
