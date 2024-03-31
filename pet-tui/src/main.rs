@@ -101,14 +101,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let chunks = Layout::default()
                 .direction(Direction::Vertical)
                 .margin(2)
-                .constraints([
-                    Constraint::Length(3),
-                    Constraint::Min(2),
-                    Constraint::Length(3),
-                ]
-                .as_ref(),
-            )
-            .split(size);
+                .constraints(
+                    [
+                        Constraint::Length(3),
+                        Constraint::Min(2),
+                        Constraint::Length(3),
+                    ]
+                    .as_ref(),
+                )
+                .split(size);
 
             let copyright = Paragraph::new("pet-CLI 2020 - all rights reserved")
                 .style(Style::default().fg(Color::LightCyan))
@@ -149,7 +150,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             match active_menu_item {
                 MenuItem::Home => rect.render_widget(render_home(), chunks[1]),
-                MenuItem::Pets => {},
+                MenuItem::Pets => {}
             }
         })?;
 
