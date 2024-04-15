@@ -8,7 +8,7 @@ func NewUserHandler() *UserHandler {
 	return &UserHandler{}
 }
 
-func (h *UserHandler) GetUsers(ctx *gin.Context) {}
+func (h *UserHandler) GetUser(ctx *gin.Context) {}
 
 func (h *UserHandler) GetUserById(ctx *gin.Context) {}
 
