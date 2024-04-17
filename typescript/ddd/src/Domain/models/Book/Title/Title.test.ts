@@ -6,7 +6,7 @@ describe('Title', () => {
   });
 
   test('Titleが1000文字で作成できる', () => {
-  const longTitle = 'a'.repeat(1000);
+    const longTitle = 'a'.repeat(1000);
     expect(new Title(longTitle).value).toBe(longTitle);
   });
 
