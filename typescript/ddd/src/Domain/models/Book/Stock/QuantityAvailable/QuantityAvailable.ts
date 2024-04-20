@@ -6,7 +6,7 @@ export class QuantityAvailable extends ValueObject<
   QuantityAvailableValue, 'QuantityAvailable'
 > {
   static readonly MAX: number = 1000000;
-  static readonly MIN: number = 1;
+  static readonly MIN: number = 0;
 
   constructor(value: QuantityAvailableValue) {
     super(value);
