@@ -8,10 +8,13 @@ import { Status, StatusEnum } from "Domain/models/Book/Stock/Status/Status";
 import { Stock } from "Domain/models/Book/Stock/Stock";
 import { StockId } from "Domain/models/Book/Stock/StockId/StockId";
 import { Title } from "Domain/models/Book/Title/Title";
+import { PrismaClientManager } from "../PrismaClientManager";
 
 const prisma = new PrismaClient();
 
 export class PrismaBookRepository implements IBookRepository {
+  constructor(private clientManager: PrismaClientManager) { }
+
   private statusDataMapper(
     status: StatusEnum
   ): 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' {
@@ -37,7 +40,9 @@ export class PrismaBookRepository implements IBookRepository {
   }
 
   async save(book: Book) {
-    await prisma.book.create({
+    const client = this.clientManager.getClient();
+
+    await client.book.create({
       data: {
         bookId: book.bookId.value,
         title: book.title.value,
