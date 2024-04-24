@@ -3,6 +3,7 @@ import '../../Program';
 import { RegisterBookApplicatoinService, RegisterBookCommand } from "Application/Book/RegisterBookApplicationService/RegisterBookApplicationService";
 import express from "express";
 import { container } from "tsyringe";
+import { BookLogSubscriber } from 'Application/shared/DomainEvent/subscribers/BookLogSubscriber';
 
 const app = express();
 const port = 5000;
@@ -13,6 +14,7 @@ app.get('/', (_, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
+  container.resolve(BookLogSubscriber);
 });
 
 app.use(express.json());

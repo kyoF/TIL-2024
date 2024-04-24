@@ -3,14 +3,17 @@ import { InMemoryBookRepository } from "Infrastructure/InMemory/Book/InMemoryBoo
 import { RegisterBookApplicatoinService, RegisterBookCommand } from "./RegisterBookApplicationService";
 import { BookId } from "Domain/models/Book/BookId/BookId";
 import { bookTestDataCreater } from "Infrastructure/Prisma/Book/bookTestDataCreator";
+import { MockDomainEventPublisher } from "Infrastructure/DomainEvent/Mock/MockDomainEventPublisher";
 
 describe('RegisterBookApplicationService', () => {
   test('重複書籍が存在しない場合、書籍が正常に作成できる', async () => {
     const repository = new InMemoryBookRepository();
     const mockTransactionManager = new MockTransactionManager();
+    const mockDomainEventPublisher = new MockDomainEventPublisher();
     const registerBookApplicationService = new RegisterBookApplicatoinService(
       repository,
-      mockTransactionManager
+      mockTransactionManager,
+      mockDomainEventPublisher,
     );
 
     const command: Required<RegisterBookCommand> = {
@@ -28,9 +31,11 @@ describe('RegisterBookApplicationService', () => {
   test('重複書籍が存在する場合、エラーを投げる', async () => {
     const repository = new InMemoryBookRepository();
     const mockTransactionManager = new MockTransactionManager();
+    const mockDomainEventPublisher = new MockDomainEventPublisher();
     const registerBookApplicationService = new RegisterBookApplicatoinService(
       repository,
-      mockTransactionManager
+      mockTransactionManager,
+      mockDomainEventPublisher,
     );
 
     const bookId = '9781111111111'

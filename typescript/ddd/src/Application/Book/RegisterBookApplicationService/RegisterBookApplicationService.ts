@@ -6,6 +6,7 @@ import { ISBNDuplicationCheckDomainService } from "Domain/service/Book/ISBNDupli
 import { Title } from "Domain/models/Book/Title/Title";
 import { Price } from "Domain/models/Book/Price/Price";
 import { inject, injectable } from "tsyringe";
+import { IDomainEventPublisher } from "Domain/shared/DomainEvent/IDomainEventPublisher";
 
 export type RegisterBookCommand = {
   isbn: string;
@@ -19,7 +20,9 @@ export class RegisterBookApplicatoinService {
     @inject('IBookRepository')
     private bookRepository: IBookRepository,
     @inject('ITransactionManager')
-    private transactionManager: ITransactionManager
+    private transactionManager: ITransactionManager,
+    @inject('IDomainEventPublisher')
+    private domainEventPublisher: IDomainEventPublisher
   ) { }
 
   async execute(command: RegisterBookCommand): Promise<void> {
@@ -38,7 +41,7 @@ export class RegisterBookApplicatoinService {
         new Price({ amount: command.priceAmount, currency: 'JPY' })
       );
 
-      await this.bookRepository.save(book);
+      await this.bookRepository.save(book, this.domainEventPublisher);
     });
   }
 }

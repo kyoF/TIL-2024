@@ -9,6 +9,7 @@ import { Stock } from "Domain/models/Book/Stock/Stock";
 import { QuantityAvailable } from "Domain/models/Book/Stock/QuantityAvailable/QuantityAvailable";
 import { Status, StatusEnum } from "Domain/models/Book/Stock/Status/Status";
 import { PrismaClientManager } from "../PrismaClientManager";
+import { IDomainEventPublisher } from "Domain/shared/DomainEvent/IDomainEventPublisher";
 
 const prisma = new PrismaClient();
 
@@ -21,6 +22,10 @@ describe('PrismaBookRepository', () => {
   const clientManager = new PrismaClientManager();
   const repository = new PrismaBookRepository(clientManager);
 
+  const mockDomainEventPublisher = {
+    publish: jest.fn(),
+  } as IDomainEventPublisher;
+
   test('saveした集約がfindで取得できる', async () => {
     const bookId = new BookId('9781111111111');
     const title = new Title('吾輩は猫である');
@@ -29,7 +34,9 @@ describe('PrismaBookRepository', () => {
       currency: 'JPY',
     });
     const book = Book.create(bookId, title, price);
-    await repository.save(book);
+    await repository.save(book, mockDomainEventPublisher);
+
+    expect(mockDomainEventPublisher.publish).toHaveBeenCalledTimes(1);
 
     const createEntity = await repository.find(bookId);
     expect(createEntity?.bookId.equals(bookId)).toBeTruthy();
@@ -56,7 +63,9 @@ describe('PrismaBookRepository', () => {
       stock
     );
 
-    await repository.update(book);
+    await repository.update(book, mockDomainEventPublisher);
+    expect(mockDomainEventPublisher.publish).toHaveBeenCalledTimes(1);
+
     const updatedEntity = await repository.find(createdEntity.bookId);
     expect(updatedEntity?.bookId.equals(book.bookId)).toBeTruthy();
     expect(updatedEntity?.title.equals(book.title)).toBeTruthy();
@@ -72,7 +81,9 @@ describe('PrismaBookRepository', () => {
     const readEntity = await repository.find(createdEntity.bookId);
     expect(readEntity).not.toBeNull();
 
-    await repository.delete(createdEntity.bookId);
+    await repository.delete(createdEntity, mockDomainEventPublisher);
+    expect(mockDomainEventPublisher.publish).toHaveBeenCalledTimes(1);
+
     const deleteEntity = await repository.find(createdEntity.bookId);
     expect(deleteEntity).toBeNull();
   });

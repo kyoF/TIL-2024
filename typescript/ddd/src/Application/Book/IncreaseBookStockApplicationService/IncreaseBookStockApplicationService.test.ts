@@ -3,13 +3,16 @@ import { InMemoryBookRepository } from "Infrastructure/InMemory/Book/InMemoryBoo
 import { IncreaseBookStockApplicationService, IncreaseBookStockCommand } from "./IncreaseBookStockApplicationService";
 import { bookTestDataCreater } from "Infrastructure/Prisma/Book/bookTestDataCreator";
 import { BookId } from "Domain/models/Book/BookId/BookId";
+import { MockDomainEventPublisher } from "Infrastructure/DomainEvent/Mock/MockDomainEventPublisher";
 
 describe('IncreaseBookStockApplicationService', () => {
   test('書籍の在庫を増加することができる', async () => {
     const repository = new InMemoryBookRepository();
     const mockTransactionManager = new MockTransactionManager();
+    const mockDomainEventPublisher = new MockDomainEventPublisher();
     const increaseBookStockApplicationService = new IncreaseBookStockApplicationService(
-      repository, mockTransactionManager
+      repository, mockTransactionManager,
+      mockDomainEventPublisher,
     );
 
     const bookId = '9781111111111';
@@ -32,8 +35,10 @@ describe('IncreaseBookStockApplicationService', () => {
   test('書籍が存在しない場合、エラーを投げる', async () => {
     const repository = new InMemoryBookRepository();
     const mockTransactionManager = new MockTransactionManager();
+    const mockDomainEventPublisher = new MockDomainEventPublisher();
     const increaseBookStockApplicationService = new IncreaseBookStockApplicationService(
-      repository, mockTransactionManager
+      repository, mockTransactionManager,
+      mockDomainEventPublisher,
     );
 
     const bookId = '9781111111111';
