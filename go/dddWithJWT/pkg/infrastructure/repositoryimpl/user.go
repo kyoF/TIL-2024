@@ -11,18 +11,18 @@ type DBTX interface {
 	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
 	PrepareContext(context.Context, string) (*sql.Stmt, error)
 	QueryContext(context.Context, string, ...interface{}) (*sql.Rows, error)
-	QueryRowContext(context.Context, string, ...interface{}) *sql.Rows
+	QueryRowContext(context.Context, string, ...interface{}) *sql.Row
 }
 
-type repositoryimpl struct {
+type repositoryImpl struct {
 	db DBTX
 }
 
 func NewRepositoryImpl(db DBTX) repository.Repository {
-	return &repositoryimpl{db: db}
+	return &repositoryImpl{db: db}
 }
 
-func (ri *repositoryimpl) CreateUser(ctx context.Context, user *model.User) (*model.User, error) {
+func (ri *repositoryImpl) CreateUser(ctx context.Context, user *model.User) (*model.User, error) {
 	var lastInsertId int
 	query := "INSERT INTO users(username, email, password) VALUES ($1, $2, $3) returning id"
 	err := ri.db.QueryRowContext(ctx, query, user.Username, user.Email, user.Password).Scan(&lastInsertId)
@@ -34,7 +34,7 @@ func (ri *repositoryimpl) CreateUser(ctx context.Context, user *model.User) (*mo
 	return user, nil
 }
 
-func (ri *repositoryimpl) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
+func (ri *repositoryImpl) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
 	u := model.User{}
 	query := "SELECT id, username, email, password FROM users WHERE email = $1"
 	err := ri.db.QueryRowContext(ctx, query, email).Scan(&u.ID, &u.Username, &u.Email, &u.Password)
