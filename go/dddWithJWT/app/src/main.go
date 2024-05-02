@@ -1,6 +1,7 @@
 package main
 
-import "dddWithJWT/presentation"
+import "app/src/presentation"
+
 
 func main() {
     presentation.InitRoute()
