@@ -1,11 +1,9 @@
 package repositoryimpl
 
 import (
-	"dddWithJWT/domain/entity"
-	"dddWithJWT/domain/repository"
-	value_objects "dddWithJWT/domain/value_object"
-	"hash"
-	"log"
+	"app/src/domain/entity"
+	"app/src/domain/repository"
+	"app/src/domain/value_object"
 
 	"gorm.io/gorm"
 )
@@ -19,33 +17,32 @@ func NewAuthRepository(db *gorm.DB) repository.AuthRepository {
 }
 
 func (i *authInfra) CreateAuth(auth entity.Auth) (*entity.Auth, error) {
-    hashedPass, err := value_objects.NewPassword(auth.Password)
-    if err != nil {
-        log.Fatal(err)
-    }
-    user := entity.Auth{
-        UserId: auth.UserId,
-        Email: auth.Email,
-        Password: hashedPass.Value(),
-    }
-	var lastInsertId int
-	query := "INSERT INTO users(username, email, password) VALUES ($1, $2, $3) returning id"
-	err := ri.db.QueryRowContext(ctx, query, user.Username, user.Email, user.Password).Scan(&lastInsertId)
+	hashedPass, err := value_object.NewPassword(auth.Password)
 	if err != nil {
-		return &model.User{}, err
+		return nil, err
+	}
+	authUser := entity.Auth{
+		UserId:   auth.UserId,
+		Email:    auth.Email,
+		Password: hashedPass.Value(),
 	}
 
-	user.ID = int64(lastInsertId)
-	return user, nil
+	err = i.db.Transaction(func(tx *gorm.DB) error {
+		return tx.Create(&authUser).Error
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &authUser, nil
 }
 
 func (i *authInfra) GetAuthByEmail(email string) (*entity.Auth, error) {
-	u := model.User{}
-	query := "SELECT id, username, email, password FROM users WHERE email = $1"
-	err := ri.db.QueryRowContext(ctx, query, email).Scan(&u.ID, &u.Username, &u.Email, &u.Password)
+	var authUser entity.Auth
+	err := i.db.Where("email = ?", email).First(&authUser).Error
 	if err != nil {
-		return &model.User{}, nil
+		return nil, err
 	}
 
-	return &u, nil
+	return &authUser, nil
 }
