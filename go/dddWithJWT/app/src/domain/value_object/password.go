@@ -1,4 +1,4 @@
-package value_objects
+package value_object
 
 import (
 	"errors"
@@ -11,12 +11,12 @@ type password struct {
 	value string
 }
 
-func NewPassword(pass string) (password, error) {
+func NewPassword(pass string) (*password, error) {
 	err := validation(pass)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	return password{value: pass}, nil
+	return &password{value: pass}, nil
 }
 
 func validation(pass string) error {
