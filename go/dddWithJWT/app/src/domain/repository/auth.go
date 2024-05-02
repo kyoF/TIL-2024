@@ -1,6 +1,6 @@
 package repository
 
-import "dddWithJWT/domain/entity"
+import "app/src/domain/entity"
 
 type AuthRepository interface {
 	CreateAuth(user entity.Auth) (*entity.Auth, error)
