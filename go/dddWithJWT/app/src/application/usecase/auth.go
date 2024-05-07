@@ -7,18 +7,18 @@ import (
 	"errors"
 )
 
-type AuthUsecase interface {
+type IAuthUsecase interface {
 	Signup(username, email, password string) (*entity.Auth, error)
 	Login(email, password string) (string, *entity.Auth, error)
 }
 
 type authUsecase struct {
-	authRepo repository.AuthRepository
+	authRepo repository.IAuthRepository
 }
 
-func NewUseCase(authRepo repository.AuthRepository) AuthUsecase {
+func NewUseCase(authRepo repository.IAuthRepository) IAuthUsecase {
 	return &authUsecase{
-		repository: authRepo,
+		authRepo: authRepo,
 	}
 }
 
