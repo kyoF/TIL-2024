@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  backend:
+    container_name: backend
+    hostname: backend
+    build:
+      context: ./backend
+      dockerfile: ./.docker/Dockerfile.Dev
+    environment:
+      TZ: Asia/Tokyo
+    ports:
+      - 8888:8888
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - auto-gen
+    volumes:
+      - ./backend:/app
+    profiles: ["dev"]
+
+  database:
+    container_name: database
+    build: database/
+    hostname: database
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root-password 
+      MYSQL_DATABASE: autogen
+      TZ: Asia/Tokyo
+    volumes:
+      - mysql-data:/var/lib/mysql-files
+      - ./database/initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - auto-gen
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $MYSQL_USER -p $MYSQL_PASSWORD
+
+volumes:
+  mysql-data:
+
+networks:
+  auto-gen:

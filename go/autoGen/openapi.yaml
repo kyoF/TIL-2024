@@ -1,54 +1,71 @@
-openapi: 3.0.3
+openapi: "3.0.0"
 info:
-  version: 0.0.1
-  title: サンプル API
+  version: 1.0.0
+  title: User API
 paths:
   /users:
     get:
-      operationId: GetUser
+      tags: [Users]
+      operationId: ListUsers
+      parameters:
+        - name: limit
+          in: query
+          description: limit
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: page
+          in: query
+          description: page
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
-          description: OK
+          description: user response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        default:
-          description: デフォルトのエラーレスポンス
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DefaultErrorResponse"
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
     post:
-      operationId: PostUser
+      tags: [Users]
+      operationId: CreateUsers
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/NewUser"
       responses:
         "200":
-          description: OK
-        default:
-          description: デフォルトのエラーレスポンス
+          description: user response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DefaultErrorResponse"
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
 components:
   schemas:
-    User:
-      type: object
+    user:
+      allOf:
+        - $ref: "#/components/schemas/NewUser"
+        - required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: int64
+    NewUser:
+      required:
+        - name
+        - age
       properties:
-        id:
-          type: integer
         name:
           type: string
-      required:
-        - id
-        - name
-    DefaultErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string
+        age:
+          type: number
