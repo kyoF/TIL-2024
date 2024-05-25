@@ -1,0 +1,19 @@
+linters:
+  disable-all: true
+  # check here:
+  #  - https://golangci-lint.run/usage/linters/
+  #  - https://zenn.dev/sanpo_shiho/books/61bc1e1a30bf27/viewer/642fe90
+  enable:
+    # default
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    # add
+    - goconst
+    - gofmt
+    - gofumpt
+    - unparam
+    - nilerr
