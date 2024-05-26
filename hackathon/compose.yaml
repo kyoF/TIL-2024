@@ -21,19 +21,18 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: ./.docker/Dockerfile.dev
     container_name: frontend
     ports:
       - 3000:3000
     volumes:
       - ./frontend:/frontend
+      - node_modules:/frontend/node_modules
     networks:
       - hackathon
 
   backend:
     build:
       context: ./backend
-      dockerfile: ./.docker/Dockerfile.dev
     container_name: backend
     ports:
       - 5000:5000
@@ -56,8 +55,8 @@ services:
       MINIO_DOMAIN: minio
     command: server --console-address ":9001" /data
     ports:
-      - "9100:9000"
-      - "9101:9001"
+      - 9000:9000
+      - 9001:9001
     volumes:
       - storage-data:/data
     networks:
@@ -65,6 +64,7 @@ services:
 
 volumes:
   storage-data:
+  node_modules:
 
 networks:
   hackathon:
