@@ -1,0 +1,56 @@
+services:
+  backend:
+    container_name: backend
+    hostname: backend
+    build:
+      context: ./backend
+      dockerfile: ./_docker/Dockerfile
+    environment:
+      TZ: Asia/Tokyo
+    ports:
+      - 5000:5000
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - sqlboiler
+    volumes:
+      - ./backend:/app
+
+  database:
+    container_name: database
+    build: database/
+    hostname: database
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_USER: sqlboiler
+      MYSQL_PASSWORD: sqlboiler
+      MYSQL_ROOT_PASSWORD: sqlboiler
+      MYSQL_DATABASE: sqlboiler
+      TZ: Asia/Tokyo
+    volumes:
+      - mysql-data:/var/lib/mysql-files
+      - ./database/initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - sqlboiler
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $MYSQL_USER -p $MYSQL_PASSWORD
+
+  adminer:
+    container_name: adminer
+    hostname: adminer
+    image: adminer:4.7.5
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - database
+    networks:
+      - sqlboiler
+
+volumes:
+  mysql-data:
+
+networks:
+  sqlboiler:
