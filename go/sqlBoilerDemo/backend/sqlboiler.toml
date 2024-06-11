@@ -1,0 +1,7 @@
+[mysql]
+  dbname="sqlboiler"
+  host="database"
+  port=3306
+  user="sqlboiler"
+  pass="sqlboiler"
+  sslmode="false"
