@@ -10,4 +10,6 @@ func main() {
 	e := echo.New()
 
 	e.GET("/user", presentation.GetUser())
+
+	e.Logger.Fatal(e.Start(":5000"))
 }
