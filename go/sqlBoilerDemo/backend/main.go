@@ -1,15 +1,20 @@
 package main
 
 import (
+	"backend/application"
+	"backend/infrastructure"
+	"backend/infrastructure/dao"
 	"backend/presentation"
-
-	"github.com/labstack/echo/v4"
 )
 
 func main() {
-	e := echo.New()
+	db, _ := dao.NewDB()
 
-	e.GET("/user", presentation.GetUser())
-
-	e.Logger.Fatal(e.Start(":5000"))
+	presentation.InitRoute(
+		presentation.NewRouter(
+			application.NewUsecase(
+				infrastructure.NewInfrastructure(db),
+			),
+		),
+	)
 }
