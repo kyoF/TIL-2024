@@ -2,20 +2,13 @@ package presentation
 
 import (
 	"backend/application"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
-func InitRoute(router IRouter) {
-	e := echo.New()
-
-	e.GET("/users", router.GetUsers())
-
-	e.Logger.Fatal(e.Start(":5000"))
-}
-
 type IRouter interface {
-	GetUsers() echo.HandlerFunc
+	GetUserProfiles() echo.HandlerFunc
 }
 
 type router struct {
@@ -28,8 +21,22 @@ func NewRouter(usecase application.IUsecase) IRouter {
 	}
 }
 
-func (r *router) GetUsers() echo.HandlerFunc {
+func (r *router) GetUserProfiles() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		return nil
+		var getUserProfilesDto []GetUsersDto
+		profiles, err := r.usecase.GetUserProfiles()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{
+				"message": "internal server error",
+			})
+		}
+		for _, profile := range profiles {
+			getUserProfilesDto = append(getUserProfilesDto, GetUsersDto{
+				UserId:  profile.UserId,
+				Name:    profile.Name,
+				Profile: profile.Profile,
+			})
+		}
+		return c.JSON(http.StatusOK, getUserProfilesDto)
 	}
 }
