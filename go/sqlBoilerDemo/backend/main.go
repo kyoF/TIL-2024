@@ -5,10 +5,14 @@ import (
 	"backend/infrastructure"
 	"backend/infrastructure/dao"
 	"backend/presentation"
+	"log"
 )
 
 func main() {
-	db, _ := dao.NewDB()
+	db, err := dao.NewDB()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	presentation.InitRoute(
 		presentation.NewRouter(
