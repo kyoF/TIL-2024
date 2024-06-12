@@ -1,5 +1,5 @@
 package domain
 
 type IRepository interface {
-	GetUsers()
+	GetUserProfiles() ([]Profile, error)
 }
