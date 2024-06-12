@@ -1,10 +1,13 @@
 package dao
 
-import "database/sql"
+import (
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
+)
 
 func NewDB() (*sql.DB, error) {
 	return sql.Open(
 		"mysql",
-		"host=sqlboiler dbname=sqlboiler user=sqlboiler password=sqlboiler sslmode=disable",
+		"sqlboiler:sqlboiler@tcp(database:3306)/sqlboiler?parseTime=true",
 	)
 }
