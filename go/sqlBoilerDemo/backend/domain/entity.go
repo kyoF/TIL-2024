@@ -1,6 +1,6 @@
 package domain
 
-type Profile struct {
+type UserProfile struct {
 	UserId  string
 	Name    string
 	Profile string

@@ -17,18 +17,18 @@ func NewInfrastructure(db *sql.DB) domain.IRepository {
 	}
 }
 
-func (i *mysqlInfrastructure) GetUserProfiles() ([]domain.Profile, error) {
-	profiles := []domain.Profile{}
+func (i *mysqlInfrastructure) GetUserProfiles() ([]domain.UserProfile, error) {
+	profiles := []domain.UserProfile{}
 	users, err := models.Users().All(context.Background(), i.db)
 	if err != nil {
-		return []domain.Profile{}, nil
+		return []domain.UserProfile{}, nil
 	}
 	for _, user := range users {
-		profiles = append(profiles, domain.Profile{
+		profiles = append(profiles, domain.UserProfile{
 			UserId:  user.UserID,
 			Name:    user.Name.String,
 			Profile: user.Profile.String,
 		})
 	}
-	return []domain.Profile{}, nil
+	return []domain.UserProfile{}, nil
 }

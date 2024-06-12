@@ -3,7 +3,7 @@ package application
 import "backend/domain"
 
 type IUsecase interface {
-	GetUserProfiles() ([]domain.Profile, error)
+	GetUserProfiles() ([]domain.UserProfile, error)
 }
 
 type usecase struct {
@@ -16,6 +16,6 @@ func NewUsecase(repository domain.IRepository) IUsecase {
 	}
 }
 
-func (u *usecase) GetUserProfiles() ([]domain.Profile, error) {
+func (u *usecase) GetUserProfiles() ([]domain.UserProfile, error) {
 	return u.repository.GetUserProfiles()
 }
