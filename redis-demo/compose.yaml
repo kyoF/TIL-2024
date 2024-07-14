@@ -1,0 +1,57 @@
+services:
+  go:
+    build:
+      context: backend
+      dockerfile: Dockerfile.test
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+      - mysql
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=your_username
+      - DB_PASSWORD=your_password
+      - DB_NAME=your_database_name
+    networks:
+      - redis-demo
+
+  redis:
+    build:
+      context: redis
+      dockerfile: Dockerfile
+    ports:
+      - "6379:6379"
+    networks:
+      - redis-demo
+
+  nextjs:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - redis-demo
+
+  mysql:
+    build:
+      context: mysql
+      dockerfile: Dockerfile
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=your_database_name
+      - MYSQL_ROOT_PASSWORD=your_root_password
+      - MYSQL_USER=your_username
+      - MYSQL_PASSWORD=your_password
+    volumes:
+    - ./initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - redis-demo
+
+networks:
+  redis-demo:
