@@ -31,29 +31,45 @@ func hashPassword(password string) string {
 	return hex.EncodeToString(hash[:])
 }
 
-func login(c echo.Context) error {
-	debug("a")
+func signup(c echo.Context) error {
 	user := new(User)
 	if err := c.Bind(user); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid input"})
 	}
-	debug("b")
 
 	hashedPassword := hashPassword(user.Password)
 
-	debug("c")
+	_, err := db.Exec("INSERT INTO users (name, password) VALUES (?, ?)", user.Username, hashedPassword)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Could not create user"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"message": "User created successfully"})
+}
+
+func login(c echo.Context) error {
+	user := new(User)
+	if err := c.Bind(user); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid input"})
+	}
+
+	hashedPassword := hashPassword(user.Password)
+
 	var storedPassword string
 	err := db.QueryRow("SELECT password FROM users WHERE name = ?", user.Username).Scan(&storedPassword)
-	fmt.Println(err)
-	debug("d")
+    debug("a")
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid credentials"})
 	}
-	debug("e")
 
+    debug("b")
+    debug(storedPassword)
+    debug(hashedPassword)
 	if storedPassword != hashedPassword {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid credentials"})
 	}
+
+    debug("c")
 
 	sessionID := fmt.Sprintf("%x", sha256.Sum256([]byte(user.Username+time.Now().String())))
 	err = rdb.Set(ctx, sessionID, user.Username, 24*time.Hour).Err()
@@ -61,16 +77,26 @@ func login(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Could not create session"})
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{"message": "Login successful", "session_id": sessionID})
+	// CookieにセッションIDを設定
+	cookie := &http.Cookie{
+		Name:     "session_id",
+		Value:    sessionID,
+		Expires:  time.Now().Add(24 * time.Hour),
+		HttpOnly: true,
+	}
+	c.SetCookie(cookie)
+
+	return c.JSON(http.StatusOK, map[string]string{"message": "Login successful"})
 }
 
 func authMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		sessionID := c.Request().Header.Get("Authorization")
-		if sessionID == "" {
+		cookie, err := c.Cookie("session_id")
+		if err != nil {
 			return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Missing session ID"})
 		}
 
+		sessionID := cookie.Value
 		username, err := rdb.Get(ctx, sessionID).Result()
 		if err == redis.Nil {
 			return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid session ID"})
@@ -102,10 +128,11 @@ func main() {
 	defer db.Close()
 
 	rdb = redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: "redis:6379",
 	})
 	defer rdb.Close()
 
+	e.POST("/signup", signup)
 	e.POST("/login", login)
 	e.GET("/restricted", restrictedEndpoint, authMiddleware)
 
