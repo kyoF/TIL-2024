@@ -57,19 +57,19 @@ func login(c echo.Context) error {
 
 	var storedPassword string
 	err := db.QueryRow("SELECT password FROM users WHERE name = ?", user.Username).Scan(&storedPassword)
-    debug("a")
+	debug("a")
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid credentials"})
 	}
 
-    debug("b")
-    debug(storedPassword)
-    debug(hashedPassword)
+	debug("b")
+	debug(storedPassword)
+	debug(hashedPassword)
 	if storedPassword != hashedPassword {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid credentials"})
 	}
 
-    debug("c")
+	debug("c")
 
 	sessionID := fmt.Sprintf("%x", sha256.Sum256([]byte(user.Username+time.Now().String())))
 	err = rdb.Set(ctx, sessionID, user.Username, 24*time.Hour).Err()
@@ -87,6 +87,32 @@ func login(c echo.Context) error {
 	c.SetCookie(cookie)
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "Login successful"})
+}
+
+func logout(c echo.Context) error {
+	cookie, err := c.Cookie("session_id")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": "No session ID found"})
+	}
+
+	sessionID := cookie.Value
+
+	// RedisからセッションIDを削除
+	err = rdb.Del(ctx, sessionID).Err()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Could not delete session"})
+	}
+
+	// クッキーを無効化
+	cookie = &http.Cookie{
+		Name:     "session_id",
+		Value:    "",
+		Expires:  time.Now().Add(-1 * time.Hour),
+		HttpOnly: true,
+	}
+	c.SetCookie(cookie)
+
+	return c.JSON(http.StatusOK, map[string]string{"message": "Logout successful"})
 }
 
 func authMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
@@ -134,6 +160,7 @@ func main() {
 
 	e.POST("/signup", signup)
 	e.POST("/login", login)
+	e.POST("/logout", logout)
 	e.GET("/restricted", restrictedEndpoint, authMiddleware)
 
 	e.Logger.Fatal(e.Start(":8888"))
