@@ -1,57 +1,71 @@
 services:
-  go:
+  backend:
+    container_name: backend
+    hostname: backend
     build:
-      context: backend
-      dockerfile: Dockerfile.test
-    ports:
-      - "8080:8080"
-    depends_on:
-      - redis
-      - mysql
+      context: ./backend
+      dockerfile: ./.docker/Dockerfile
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_USER=your_username
-      - DB_PASSWORD=your_password
-      - DB_NAME=your_database_name
-    networks:
-      - redis-demo
-
-  redis:
-    build:
-      context: redis
-      dockerfile: Dockerfile
+      TZ: Asia/Tokyo
     ports:
-      - "6379:6379"
+      - 8888:8888
+    depends_on:
+      mysql:
+        condition: service_healthy
     networks:
-      - redis-demo
+      - redisdemo
+    volumes:
+      - ./backend:/app
 
-  nextjs:
+  frontend:
+    container_name: frontend
+    hostname: frontend
     build:
-      context: frontend
-      dockerfile: Dockerfile
+      context: ./frontend
+      dockerfile: ./.docker/Dockerfile
+    environment:
+      TZ: Asia/Tokyo
     ports:
-      - "3000:3000"
+      - 3000:3000
     networks:
-      - redis-demo
+      - redisdemo
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    tty: true
+    stdin_open: true
 
   mysql:
-    build:
-      context: mysql
-      dockerfile: Dockerfile
+    container_name: mysql
+    build: resources/mysql
+    hostname: mysql
     ports:
-      - "3306:3306"
+      - 3306:3306
     environment:
-      - MYSQL_DATABASE=your_database_name
-      - MYSQL_ROOT_PASSWORD=your_root_password
-      - MYSQL_USER=your_username
-      - MYSQL_PASSWORD=your_password
+      MYSQL_USER: mysqluser
+      MYSQL_PASSWORD: mysqlpassword
+      MYSQL_ROOT_PASSWORD: mysqlrootpassword
+      MYSQL_DATABASE: redisdemo
+      TZ: Asia/Tokyo
     volumes:
-    - ./initdb.d:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql-files
+      - ./resources/mysql/initdb.d:/docker-entrypoint-initdb.d
     networks:
-      - redis-demo
+      - redisdemo
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $MYSQL_USER -p $MYSQL_PASSWORD
+
+  redis:
+    container_name: redis
+    build: resources/redis
+    hostname: redis
+    ports:
+      - 6379:6379
+    networks:
+      - redisdemo
+
+volumes:
+  mysql-data:
 
 networks:
-  redis-demo:
+  redisdemo:
