@@ -1,9 +1,0 @@
-# Dockerfile for MySQL
-FROM mysql:8.0
-
-ENV MYSQL_DATABASE=userdb
-ENV MYSQL_ROOT_PASSWORD=rootpassword
-ENV MYSQL_USER=username
-ENV MYSQL_PASSWORD=password
-
-EXPOSE 3306
