@@ -43,7 +43,7 @@ func login(c echo.Context) error {
 
 	debug("c")
 	var storedPassword string
-	err := db.QueryRow("SELECT password FROM users WHERE username = ?", user.Username).Scan(&storedPassword)
+	err := db.QueryRow("SELECT password FROM users WHERE name = ?", user.Username).Scan(&storedPassword)
 	fmt.Println(err)
 	debug("d")
 	if err != nil {
@@ -95,7 +95,7 @@ func main() {
 	e.Use(middleware.Recover())
 
 	var err error
-	db, err = sql.Open("mysql", "username:rootpassword@tcp(mysql:3306)/userdb")
+	db, err = sql.Open("mysql", "mysqluser:mysqlpassword@tcp(mysql:3306)/redisdemo")
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
@@ -109,7 +109,7 @@ func main() {
 	e.POST("/login", login)
 	e.GET("/restricted", restrictedEndpoint, authMiddleware)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":8888"))
 }
 
 func debug(msg string) {
