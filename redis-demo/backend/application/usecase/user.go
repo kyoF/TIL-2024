@@ -11,7 +11,7 @@ import (
 
 type IUserUsecase interface {
 	Login(name, password string) (string, error)
-	Logout() error
+	Logout(sessionId string) error
 	Signup(name, password string) error
 }
 
@@ -41,7 +41,7 @@ func (uc *userUsecase) Login(name, password string) (string, error) {
 
 	sessionId := fmt.Sprintf("%x", sha256.Sum256([]byte(user.Name+time.Now().String())))
 
-	err = uc.sessionRepo.Insert(sessionId, user.Name, 24*time.Hour)
+	err = uc.sessionRepo.Set(sessionId, user.Name, 24*time.Hour)
 	if err != nil {
 		return "", err
 	}
@@ -49,12 +49,17 @@ func (uc *userUsecase) Login(name, password string) (string, error) {
 	return sessionId, nil
 }
 
-func (uc *userUsecase) Logout() error {
-	return nil
+func (uc *userUsecase) Logout(sessinId string) error {
+    err := uc.sessionRepo.Delete(sessinId)
+	return err
 }
 
 func (uc *userUsecase) Signup(name, password string) error {
-	return nil
+	hashedPassword := hashPassword(password)
+
+	err := uc.userRepo.Insert(name, hashedPassword)
+
+	return err
 }
 
 func hashPassword(password string) string {
