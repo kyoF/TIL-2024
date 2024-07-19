@@ -5,5 +5,6 @@ import (
 )
 
 type ISessionRepository interface {
-	Insert(sessionId string, name string, expanded time.Duration) error
+	Set(sessionId string, name string, expanded time.Duration) error
+    Delete(sessionId string) error
 }
