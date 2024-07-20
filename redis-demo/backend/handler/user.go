@@ -20,7 +20,7 @@ type userHandler struct {
 	usecase usecase.IUserUsecase
 }
 
-func NewUserUsecase(usecase usecase.IUserUsecase) IUserHandler {
+func NewUserHandler(usecase usecase.IUserUsecase) IUserHandler {
 	return &userHandler{usecase: usecase}
 }
 
