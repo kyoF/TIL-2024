@@ -8,7 +8,7 @@ import (
 )
 
 type IMiddleware interface {
-	AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc
+	Auth(next echo.HandlerFunc) echo.HandlerFunc
 }
 
 type middleware struct {
@@ -19,7 +19,7 @@ func NewMiddleware(queryService queryservice.IAuthQueriService) IMiddleware {
 	return &middleware{queryService: queryService}
 }
 
-func (m *middleware) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+func (m *middleware) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cookie, err := c.Cookie("session_id")
 		if err != nil {
