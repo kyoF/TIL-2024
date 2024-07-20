@@ -30,18 +30,18 @@ func NewUserUsecase(
 func (uc *userUsecase) Login(name, password string) (string, error) {
 	hashedPassword := hashPassword(password)
 
-	user, err := uc.userRepo.Get(name)
+	storedPassword, err := uc.userRepo.Get(name)
 	if err != nil {
 		return "", err
 	}
 
-	if user.Password != hashedPassword {
+	if storedPassword != hashedPassword {
 		return "", errors.New("password is uncorrect")
 	}
 
-	sessionId := fmt.Sprintf("%x", sha256.Sum256([]byte(user.Name+time.Now().String())))
+	sessionId := fmt.Sprintf("%x", sha256.Sum256([]byte(name+time.Now().String())))
 
-	err = uc.sessionRepo.Set(sessionId, user.Name, 24*time.Hour)
+	err = uc.sessionRepo.Set(sessionId, name, 24*time.Hour)
 	if err != nil {
 		return "", err
 	}
@@ -50,7 +50,7 @@ func (uc *userUsecase) Login(name, password string) (string, error) {
 }
 
 func (uc *userUsecase) Logout(sessinId string) error {
-    err := uc.sessionRepo.Delete(sessinId)
+	err := uc.sessionRepo.Delete(sessinId)
 	return err
 }
 
