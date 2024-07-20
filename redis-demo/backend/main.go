@@ -14,8 +14,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer mysqlDB.Close()
 
 	redisDB := redis.NewRedis()
+	defer redisDB.Close()
 
 	handler.InitRoute(di.InjectDependencies(mysqlDB, redisDB))
 }
