@@ -16,15 +16,15 @@ type IUserUsecase interface {
 }
 
 type userUsecase struct {
-	userRepo    repository.IUserRepository
-	sessionRepo repository.ISessionRepository
+	userRepo repository.IUserRepository
+	authRepo repository.IAuthRepository
 }
 
 func NewUserUsecase(
 	userRepo repository.IUserRepository,
-	sessionRepo repository.ISessionRepository,
+	authRepo repository.IAuthRepository,
 ) IUserUsecase {
-	return &userUsecase{userRepo: userRepo, sessionRepo: sessionRepo}
+	return &userUsecase{userRepo: userRepo, authRepo: authRepo}
 }
 
 func (uc *userUsecase) Login(name, password string) (string, error) {
@@ -41,7 +41,7 @@ func (uc *userUsecase) Login(name, password string) (string, error) {
 
 	sessionId := fmt.Sprintf("%x", sha256.Sum256([]byte(name+time.Now().String())))
 
-	err = uc.sessionRepo.Set(sessionId, name, 24*time.Hour)
+	err = uc.authRepo.Set(sessionId, name, 24*time.Hour)
 	if err != nil {
 		return "", err
 	}
@@ -50,7 +50,7 @@ func (uc *userUsecase) Login(name, password string) (string, error) {
 }
 
 func (uc *userUsecase) Logout(sessinId string) error {
-	err := uc.sessionRepo.Delete(sessinId)
+	err := uc.authRepo.Delete(sessinId)
 	return err
 }
 
