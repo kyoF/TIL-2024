@@ -1,4 +1,4 @@
-package handler
+package router
 
 import (
 	"backend/application/dto"
@@ -9,22 +9,22 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type IUserHandler interface {
+type IUserRouter interface {
 	Login() echo.HandlerFunc
 	Logout() echo.HandlerFunc
 	Signup() echo.HandlerFunc
 	Test() echo.HandlerFunc
 }
 
-type userHandler struct {
+type userRouter struct {
 	usecase usecase.IUserUsecase
 }
 
-func NewUserHandler(usecase usecase.IUserUsecase) IUserHandler {
-	return &userHandler{usecase: usecase}
+func NewUserRouter(usecase usecase.IUserUsecase) IUserRouter {
+	return &userRouter{usecase: usecase}
 }
 
-func (h *userHandler) Login() echo.HandlerFunc {
+func (h *userRouter) Login() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var user dto.User
 		if err := c.Bind(user); err != nil {
@@ -48,7 +48,7 @@ func (h *userHandler) Login() echo.HandlerFunc {
 	}
 }
 
-func (h *userHandler) Logout() echo.HandlerFunc {
+func (h *userRouter) Logout() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cookie, err := c.Cookie("session_id")
 		if err != nil {
@@ -74,7 +74,7 @@ func (h *userHandler) Logout() echo.HandlerFunc {
 	}
 }
 
-func (h *userHandler) Signup() echo.HandlerFunc {
+func (h *userRouter) Signup() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var user dto.User
 		if err := c.Bind(user); err != nil {
@@ -91,7 +91,7 @@ func (h *userHandler) Signup() echo.HandlerFunc {
 	}
 }
 
-func (h *userHandler) Test() echo.HandlerFunc {
+func (h *userRouter) Test() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]string{"message": "Hello World!"})
 	}
