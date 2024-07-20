@@ -2,6 +2,7 @@ package redispersistance
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -32,5 +33,8 @@ func (i *infra) Delete(sessionId string) error {
 func (i *infra) Get(sessionId string) (string, error) {
 	ctx := context.Background()
 	name, err := i.db.Get(ctx, sessionId).Result()
+    if err == redis.Nil {
+        return "", errors.New("Invali session ID")
+    }
 	return name, err
 }
