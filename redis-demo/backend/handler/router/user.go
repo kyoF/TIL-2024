@@ -26,7 +26,7 @@ func NewUserRouter(usecase usecase.IUserUsecase) IUserRouter {
 
 func (h *userRouter) Login() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var user dto.User
+		user := new(dto.User)
 		if err := c.Bind(user); err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid input"})
 		}
@@ -76,7 +76,7 @@ func (h *userRouter) Logout() echo.HandlerFunc {
 
 func (h *userRouter) Signup() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var user dto.User
+		user := new(dto.User)
 		if err := c.Bind(user); err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid input"})
 		}
