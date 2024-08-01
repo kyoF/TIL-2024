@@ -1,0 +1,70 @@
+version: "3"
+
+services:
+  database:
+    build:
+      context: ./database
+    container_name: database
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: mysqlpass
+      MYSQL_USER: mysqluser
+      MYSQL_PASSWORD: mysqlpass
+      MYSQL_DATABASE: portfolio
+      TZ: Asia/Tokyo
+    networks:
+      - hackathon
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $MYSQL_USER -p $MYSQL_PASSWORD
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/frontend
+      - node_modules:/frontend/node_modules
+    networks:
+      - hackathon
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports:
+      - 5000:5000
+    environment:
+      DATABASE_URL: mysql://mysqluser:mysqlpass@database:3306/portfolio
+    volumes:
+      - ./backend:/backend
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - hackathon
+
+  storage:
+    image: quay.io/minio/minio:RELEASE.2023-10-25T06-33-25Z
+    container_name: storage
+    environment:
+      MINIO_ROOT_USER: miniouser
+      MINIO_ROOT_PASSWORD: miniopass
+      MINIO_DOMAIN: minio
+    command: server --console-address ":9001" /data
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - storage-data:/data
+    networks:
+      - hackathon
+
+volumes:
+  storage-data:
+  node_modules:
+
+networks:
+  hackathon:
