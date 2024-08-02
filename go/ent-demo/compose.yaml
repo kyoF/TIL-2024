@@ -23,8 +23,8 @@ services:
       - 3306:3306
     environment:
       MYSQL_USER: mysqluser
-      MYSQL_PASSWORD: mysqlpassword
-      MYSQL_ROOT_PASSWORD: mysqlrootpassword
+      MYSQL_PASSWORD: mysqlpass
+      MYSQL_ROOT_PASSWORD: mysqlrootpass
       MYSQL_DATABASE: entdemo
       TZ: Asia/Tokyo
     volumes:

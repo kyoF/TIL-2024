@@ -1,4 +1,4 @@
-package entity
+package schema
 
 import (
 	"entgo.io/ent"
@@ -6,13 +6,15 @@ import (
 	"github.com/google/uuid"
 )
 
+// User holds the schema definition for the User entity.
 type User struct {
 	ent.Schema
 }
 
+// Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("userid", uuid.UUID{}).
+		field.UUID("user_id", uuid.UUID{}).
 			Default(uuid.New).
 			Unique(),
 		field.String("name").
@@ -20,5 +22,13 @@ func (User) Fields() []ent.Field {
 		field.String("password").
 			Sensitive().
 			NotEmpty(),
+		field.String("email").
+			Unique().
+			NotEmpty(),
 	}
+}
+
+// Edges of the User.
+func (User) Edges() []ent.Edge {
+	return nil
 }
