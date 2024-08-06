@@ -18,10 +18,11 @@ func main() {
 	dataSourceName := fmt.Sprintf("mysql://%s:%s@%s:%s/%s?charset=utf8&parseTime=True",
 		utils.GetEnv("DATABASE_USER", "mysqluser"),
 		utils.GetEnv("DATABASE_PASSWORD", "mysqlpass"),
-		utils.GetEnv("DATABASE_HOST", "backend"),
+		utils.GetEnv("DATABASE_HOST", "database"),
 		utils.GetEnv("DATABASE_PORT", "3306"),
 		utils.GetEnv("DATABASE_NAME", "entdemo"),
 	)
+    fmt.Println(dataSourceName)
 
 	ctx := context.Background()
 
