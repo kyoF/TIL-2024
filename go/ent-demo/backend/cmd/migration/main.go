@@ -15,15 +15,13 @@ import (
 )
 
 func main() {
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True",
-		utils.GetEnv("MYSQL_USER", "mysqluser"),
-		utils.GetEnv("MYSQL_PASSWORD", "mysqlpass"),
-		utils.GetEnv("MYSQL_HOST", "database"),
+    dataSourceName := fmt.Sprintf("mysql://%s:%s@%s:%s/%s?charset=utf8&parseTime=True",
+		utils.GetEnv("MYSQL_USER", "user"),
+		utils.GetEnv("MYSQL_PASSWORD", "password"),
+		utils.GetEnv("MYSQL_HOST", "localhost"),
 		utils.GetEnv("MYSQL_PORT", "3306"),
 		utils.GetEnv("MYSQL_NAME", "entdemo"),
 	)
-    fmt.Println(dataSourceName)
-
 	ctx := context.Background()
 
 	dir, err := atlas.NewLocalDir("ent/migrate/migrations")
