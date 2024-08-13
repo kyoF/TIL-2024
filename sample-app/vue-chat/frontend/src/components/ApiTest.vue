@@ -15,7 +15,7 @@ export default {
   },
   methods: {
     test() {
-      fetch('http://localhost:5000/api/test')
+      fetch(`${import.meta.env.VITE_API_URL}/api/test`)
         .then((response) => response.json())
         .then((data) => {
           this.message = data.message
