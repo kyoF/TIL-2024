@@ -74,6 +74,11 @@ func Email(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldEmail, v))
 }
 
+// Introduction applies equality check predicate on the "introduction" field. It's identical to IntroductionEQ.
+func Introduction(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIntroduction, v))
+}
+
 // UserIDEQ applies the EQ predicate on the "user_id" field.
 func UserIDEQ(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldUserID, v))
@@ -307,6 +312,71 @@ func EmailEqualFold(v string) predicate.User {
 // EmailContainsFold applies the ContainsFold predicate on the "email" field.
 func EmailContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldEmail, v))
+}
+
+// IntroductionEQ applies the EQ predicate on the "introduction" field.
+func IntroductionEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIntroduction, v))
+}
+
+// IntroductionNEQ applies the NEQ predicate on the "introduction" field.
+func IntroductionNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldIntroduction, v))
+}
+
+// IntroductionIn applies the In predicate on the "introduction" field.
+func IntroductionIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldIntroduction, vs...))
+}
+
+// IntroductionNotIn applies the NotIn predicate on the "introduction" field.
+func IntroductionNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldIntroduction, vs...))
+}
+
+// IntroductionGT applies the GT predicate on the "introduction" field.
+func IntroductionGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldIntroduction, v))
+}
+
+// IntroductionGTE applies the GTE predicate on the "introduction" field.
+func IntroductionGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldIntroduction, v))
+}
+
+// IntroductionLT applies the LT predicate on the "introduction" field.
+func IntroductionLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldIntroduction, v))
+}
+
+// IntroductionLTE applies the LTE predicate on the "introduction" field.
+func IntroductionLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldIntroduction, v))
+}
+
+// IntroductionContains applies the Contains predicate on the "introduction" field.
+func IntroductionContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldIntroduction, v))
+}
+
+// IntroductionHasPrefix applies the HasPrefix predicate on the "introduction" field.
+func IntroductionHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldIntroduction, v))
+}
+
+// IntroductionHasSuffix applies the HasSuffix predicate on the "introduction" field.
+func IntroductionHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldIntroduction, v))
+}
+
+// IntroductionEqualFold applies the EqualFold predicate on the "introduction" field.
+func IntroductionEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldIntroduction, v))
+}
+
+// IntroductionContainsFold applies the ContainsFold predicate on the "introduction" field.
+func IntroductionContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldIntroduction, v))
 }
 
 // And groups predicates with the AND operator between them.

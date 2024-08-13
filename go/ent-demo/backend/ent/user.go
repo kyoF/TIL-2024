@@ -24,7 +24,9 @@ type User struct {
 	// Password holds the value of the "password" field.
 	Password string `json:"-"`
 	// Email holds the value of the "email" field.
-	Email        string `json:"email,omitempty"`
+	Email string `json:"email,omitempty"`
+	// Introduction holds the value of the "introduction" field.
+	Introduction string `json:"introduction,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -35,7 +37,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldName, user.FieldPassword, user.FieldEmail:
+		case user.FieldName, user.FieldPassword, user.FieldEmail, user.FieldIntroduction:
 			values[i] = new(sql.NullString)
 		case user.FieldUserID:
 			values[i] = new(uuid.UUID)
@@ -84,6 +86,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Email = value.String
 			}
+		case user.FieldIntroduction:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field introduction", values[i])
+			} else if value.Valid {
+				u.Introduction = value.String
+			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
 		}
@@ -130,6 +138,9 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("email=")
 	builder.WriteString(u.Email)
+	builder.WriteString(", ")
+	builder.WriteString("introduction=")
+	builder.WriteString(u.Introduction)
 	builder.WriteByte(')')
 	return builder.String()
 }

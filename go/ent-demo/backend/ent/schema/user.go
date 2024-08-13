@@ -25,6 +25,7 @@ func (User) Fields() []ent.Field {
 		field.String("email").
 			Unique().
 			NotEmpty(),
+		field.String("introduction"),
 	}
 }
 

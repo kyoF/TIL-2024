@@ -52,6 +52,12 @@ func (uc *UserCreate) SetEmail(s string) *UserCreate {
 	return uc
 }
 
+// SetIntroduction sets the "introduction" field.
+func (uc *UserCreate) SetIntroduction(s string) *UserCreate {
+	uc.mutation.SetIntroduction(s)
+	return uc
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uc *UserCreate) Mutation() *UserMutation {
 	return uc.mutation
@@ -122,6 +128,9 @@ func (uc *UserCreate) check() error {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
 		}
 	}
+	if _, ok := uc.mutation.Introduction(); !ok {
+		return &ValidationError{Name: "introduction", err: errors.New(`ent: missing required field "User.introduction"`)}
+	}
 	return nil
 }
 
@@ -163,6 +172,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 		_node.Email = value
+	}
+	if value, ok := uc.mutation.Introduction(); ok {
+		_spec.SetField(user.FieldIntroduction, field.TypeString, value)
+		_node.Introduction = value
 	}
 	return _node, _spec
 }

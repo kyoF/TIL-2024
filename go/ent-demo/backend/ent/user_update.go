@@ -84,6 +84,20 @@ func (uu *UserUpdate) SetNillableEmail(s *string) *UserUpdate {
 	return uu
 }
 
+// SetIntroduction sets the "introduction" field.
+func (uu *UserUpdate) SetIntroduction(s string) *UserUpdate {
+	uu.mutation.SetIntroduction(s)
+	return uu
+}
+
+// SetNillableIntroduction sets the "introduction" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableIntroduction(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetIntroduction(*s)
+	}
+	return uu
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -160,6 +174,9 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 	}
+	if value, ok := uu.mutation.Introduction(); ok {
+		_spec.SetField(user.FieldIntroduction, field.TypeString, value)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -232,6 +249,20 @@ func (uuo *UserUpdateOne) SetEmail(s string) *UserUpdateOne {
 func (uuo *UserUpdateOne) SetNillableEmail(s *string) *UserUpdateOne {
 	if s != nil {
 		uuo.SetEmail(*s)
+	}
+	return uuo
+}
+
+// SetIntroduction sets the "introduction" field.
+func (uuo *UserUpdateOne) SetIntroduction(s string) *UserUpdateOne {
+	uuo.mutation.SetIntroduction(s)
+	return uuo
+}
+
+// SetNillableIntroduction sets the "introduction" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableIntroduction(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetIntroduction(*s)
 	}
 	return uuo
 }
@@ -341,6 +372,9 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.Introduction(); ok {
+		_spec.SetField(user.FieldIntroduction, field.TypeString, value)
 	}
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues
