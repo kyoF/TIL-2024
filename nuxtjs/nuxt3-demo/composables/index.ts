@@ -10,3 +10,22 @@ export const useTitle = () => {
     changeTitle: changeTitle(title),
   }
 };
+
+export const useCounter = () => {
+  const num = useState<number>('num', () => 0);
+  const countUp = (num: Ref<number>) => () => {
+    num.value += 1;
+  };
+  const countDown = (num: Ref<number>) => () => {
+    num.value -= 1;
+  };
+  const countReset = (num: Ref<number>) => () => {
+    num.value = 0;
+  };
+  return {
+    num: readonly(num),
+    countUp: countUp(num),
+    countDown: countDown(num),
+    countReset: countReset(num),
+  }
+}
