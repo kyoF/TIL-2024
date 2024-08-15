@@ -3,6 +3,7 @@
     <NuxtLayout>
       <NuxtRouteAnnouncer />
       <NuxtPage />
+      <img src="~/assets/cat.jpg" alt="cat">
     </NuxtLayout>
   </div>
 </template>
