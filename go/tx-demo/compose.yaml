@@ -1,0 +1,41 @@
+services:
+  backend:
+    container_name: backend
+    hostname: backend
+    build: backend
+    environment:
+      TZ: Asia/Tokyo
+    ports:
+      - 8888:8888
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - entdemo
+    volumes:
+      - ./backend:/app
+
+  database:
+    container_name: database
+    hostname: database
+    build: database
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: txdemo
+      TZ: Asia/Tokyo
+    volumes:
+      - mysqldata:/var/lib/mysql-files
+    networks:
+      - entdemo
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $MYSQL_USER -p $MYSQL_PASSWORD
+
+volumes:
+  mysqldata:
+
+networks:
+  entdemo:
