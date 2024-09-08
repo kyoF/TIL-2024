@@ -1,17 +1,22 @@
 package main
 
 import (
-	"backend/di"
-	mysqlinfra "backend/infrastructure/mysql"
-	handler "backend/presentation"
 	"log"
+
+	"backend/di"
+
+	mysqlinfra "backend/infrastructure/mysql"
+	"backend/infrastructure/mysql/models"
+	"backend/presentation"
 )
 
 func main() {
-	mysqlDB, err := mysqlinfra.NewDB()
+	mysqlDB, err := mysqlinfra.GetDB()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	handler.InitRoute(di.New(mysqlDB))
+	mysqlDB.AutoMigrate(&models.User{})
+
+	presentation.InitRoute(di.New(mysqlDB))
 }

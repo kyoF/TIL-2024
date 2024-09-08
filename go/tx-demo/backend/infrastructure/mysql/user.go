@@ -41,7 +41,7 @@ func (u *user) Insert(userId, name string, age int) error {
 		Age:    age,
 	}
 
-	err := u.transaction.db.Create(user).Error
+	err := u.transaction.tx.Create(user).Error
 	if err != nil {
 		return err
 	}
@@ -50,11 +50,11 @@ func (u *user) Insert(userId, name string, age int) error {
 }
 
 func (u *user) UpdateName(userId, name string) error {
-	err := u.transaction.db.Model(&models.User{}).Where("user_id = ?", userId).Update("name", name).Error
+	err := u.transaction.tx.Model(&models.User{}).Where("user_id = ?", userId).Update("name", name).Error
 	return err
 }
 
 func (u *user) UpdateAge(userId string, age int) error {
-	err := u.transaction.db.Model(&models.User{}).Where("user_id = ?", userId).Update("age", age).Error
+	err := u.transaction.tx.Model(&models.User{}).Where("user_id = ?", userId).Update("age", age).Error
 	return err
 }

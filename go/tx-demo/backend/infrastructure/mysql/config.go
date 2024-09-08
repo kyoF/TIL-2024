@@ -1,7 +1,6 @@
 package mysqlinfra
 
 import (
-	"backend/infrastructure/mysql/models"
 	"fmt"
 	"log"
 	"os"
@@ -11,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewDB() (*gorm.DB, error) {
+func GetDB() (*gorm.DB, error) {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -30,8 +29,6 @@ func NewDB() (*gorm.DB, error) {
 	if err != nil {
 		log.Fatal("Failed to connect database")
 	}
-
-	db.AutoMigrate(&models.User{})
 
 	return db, nil
 }

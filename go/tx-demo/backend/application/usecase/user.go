@@ -17,12 +17,8 @@ type user struct {
 	userRepository repository.User
 }
 
-func NewUser(
-	userRepository repository.User,
-) User {
-	return &user{
-		userRepository: userRepository,
-	}
+func NewUser(userRepository repository.User) User {
+	return &user{userRepository: userRepository}
 }
 
 func (u *user) Get(userId string) (dto.User, error) {
@@ -37,11 +33,13 @@ func (u *user) Get(userId string) (dto.User, error) {
 		Age:    user.Age,
 	}, nil
 }
+
 func (u *user) Insert(userId, name string, age int) error {
 	return u.userRepository.Transaction(func() error {
 		return u.userRepository.Insert(userId, name, age)
 	})
 }
+
 func (u *user) UpdateName(userId, name string) error {
 	return u.userRepository.Transaction(func() error {
 		return u.userRepository.UpdateName(userId, name)
@@ -68,7 +66,7 @@ func (u *user) UpdateAge(userId string, age int) error {
 	}
 
 	err = u.userRepository.Transaction(func() error {
-		err := u.userRepository.UpdateName(userId, "test")
+		err := u.userRepository.UpdateAge(userId, 26)
 		if err != nil {
 			return err
 		}
