@@ -1,19 +1,17 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/labstack/echo/v4"
+	"backend/di"
+	mysqlinfra "backend/infrastructure/mysql"
+	handler "backend/presentation"
+	"log"
 )
 
 func main() {
-	e := echo.New()
+	mysqlDB, err := mysqlinfra.NewDB()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	e.GET("/", helloWorld)
-
-	e.Logger.Fatal(e.Start(":8888"))
-}
-
-func helloWorld(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
+	handler.InitRoute(di.New(mysqlDB))
 }

@@ -1,5 +1,11 @@
 package repository
 
+import "backend/domain/entity"
+
 type User interface {
-	Update(userId string) error
+	Get(userId string) (*entity.User, error)
+	Insert(userId, name string, age int) error
+	UpdateName(userId, name string) error
+	UpdateAge(userId string, age int) error
+	Transaction
 }

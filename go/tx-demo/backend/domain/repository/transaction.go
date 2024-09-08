@@ -1,5 +1,5 @@
 package repository
 
 type Transaction interface {
-	Exec()
+	Transaction(f func() error) error
 }
