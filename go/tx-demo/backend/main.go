@@ -11,12 +11,13 @@ import (
 )
 
 func main() {
-	mysqlDB, err := mysqlinfra.GetDB()
+	db, err := mysqlinfra.NewDB()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	mysqlDB.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Item{})
 
-	presentation.InitRoute(di.New(mysqlDB))
+	presentation.InitRoute(di.New(db))
 }
