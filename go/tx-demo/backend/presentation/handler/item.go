@@ -25,7 +25,7 @@ func NewItem(usecase usecase.Item) Item {
 
 func (i *item) Get() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		itemId := "1"
+		itemId := c.Param("id")
 		item, err := i.usecase.Get(itemId)
 		if err != nil {
 			return c.JSON(

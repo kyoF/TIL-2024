@@ -7,5 +7,5 @@ type User interface {
 	Insert(userId, name string, age int) error
 	UpdateName(userId, name string) error
 	UpdateAge(userId string, age int) error
-	Transaction
+	DBClient
 }

@@ -1,5 +1,5 @@
 package repository
 
-type Transaction interface {
+type DBClient interface {
 	Transaction(f func() error) error
 }

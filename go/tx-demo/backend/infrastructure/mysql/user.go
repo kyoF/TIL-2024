@@ -4,19 +4,15 @@ import (
 	"backend/domain/entity"
 	"backend/domain/repository"
 	"backend/infrastructure/mysql/models"
-
-	"gorm.io/gorm"
 )
 
 type user struct {
-	db *gorm.DB
-	*transaction
+	*dbClient
 }
 
-func NewUser(db *gorm.DB) repository.User {
+func NewUser(dbClient *dbClient) repository.User {
 	return &user{
-		db:          db,
-		transaction: &transaction{db: db},
+		dbClient: dbClient,
 	}
 }
 
@@ -41,7 +37,7 @@ func (u *user) Insert(userId, name string, age int) error {
 		Age:    age,
 	}
 
-	err := u.transaction.txDB.Create(user).Error
+	err := u.dbClient.DB().Create(user).Error
 	if err != nil {
 		return err
 	}
@@ -50,11 +46,11 @@ func (u *user) Insert(userId, name string, age int) error {
 }
 
 func (u *user) UpdateName(userId, name string) error {
-	err := u.transaction.txDB.Model(&models.User{}).Where("user_id = ?", userId).Update("name", name).Error
+	err := u.dbClient.DB().Model(&models.User{}).Where("user_id = ?", userId).Update("name", name).Error
 	return err
 }
 
 func (u *user) UpdateAge(userId string, age int) error {
-	err := u.transaction.txDB.Model(&models.User{}).Where("user_id = ?", userId).Update("age", age).Error
+	err := u.dbClient.DB().Model(&models.User{}).Where("user_id = ?", userId).Update("age", age).Error
 	return err
 }

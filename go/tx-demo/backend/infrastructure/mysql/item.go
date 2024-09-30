@@ -4,25 +4,21 @@ import (
 	"backend/domain/entity"
 	"backend/domain/repository"
 	"backend/infrastructure/mysql/models"
-
-	"gorm.io/gorm"
 )
 
 type item struct {
-	db *gorm.DB
-	*transaction
+	*dbClient
 }
 
-func NewItem(db *gorm.DB) repository.Item {
+func NewItem(dbClient *dbClient) repository.Item {
 	return &item{
-		db:          db,
-		transaction: &transaction{db: db},
+		dbClient: dbClient,
 	}
 }
 
 func (i *item) Get(itemId string) (*entity.Item, error) {
 	var item models.Item
-	err := i.db.Where("item_id = ?", itemId).First(&item).Error
+	err := i.dbClient.DB().Where("item_id = ?", itemId).First(&item).Error
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +37,7 @@ func (i *item) Insert(itemId, title, content string) error {
 		Content: content,
 	}
 
-	err := i.transaction.txDB.Create(item).Error
+	err := i.dbClient.DB().Create(item).Error
 	if err != nil {
 		return err
 	}
@@ -50,11 +46,11 @@ func (i *item) Insert(itemId, title, content string) error {
 }
 
 func (i *item) UpdateTitle(itemId, title string) error {
-	err := i.transaction.txDB.Model(&models.Item{}).Where("item_id = ?", itemId).Update("title", title).Error
+	err := i.dbClient.DB().Model(&models.Item{}).Where("item_id = ?", itemId).Update("title", title).Error
 	return err
 }
 
 func (i *item) UpdateContent(itemId, content string) error {
-	err := i.transaction.txDB.Model(&models.Item{}).Where("item_id = ?", itemId).Update("content", content).Error
+	err := i.dbClient.DB().Model(&models.Item{}).Where("item_id = ?", itemId).Update("content", content).Error
 	return err
 }

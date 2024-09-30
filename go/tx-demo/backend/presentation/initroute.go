@@ -19,8 +19,8 @@ func InitRoute(
 	e.POST("/user/age", userHandler.UpdateAge())
 	e.GET("/test", userHandler.Test())
 
-	e.GET("/item", itemHandler.Get())
 	e.POST("/item", itemHandler.Insert())
+	e.GET("/item/:id", itemHandler.Get())
 	e.POST("/item/title", itemHandler.UpdateTitle())
 	e.POST("/item/content", itemHandler.UpdateContent())
 

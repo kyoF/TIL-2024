@@ -7,5 +7,5 @@ type Item interface {
 	Insert(itemId, title, content string) error
 	UpdateTitle(userId, title string) error
 	UpdateContent(userId, content string) error
-	Transaction
+	DBClient
 }

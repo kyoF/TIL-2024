@@ -13,11 +13,13 @@ func New(db *gorm.DB) (
 	handler.Item,
 	handler.Sample,
 ) {
-	userRepository := mysqlinfra.NewUser(db)
+	dbClient := mysqlinfra.NewDBClient(db)
+
+	userRepository := mysqlinfra.NewUser(dbClient)
 	userUsecase := usecase.NewUser(userRepository)
 	userHandler := handler.NewUser(userUsecase)
 
-	itemRepository := mysqlinfra.NewItem(db)
+	itemRepository := mysqlinfra.NewItem(dbClient)
 	itemUsecase := usecase.NewItem(itemRepository)
 	itemHandler := handler.NewItem(itemUsecase)
 
