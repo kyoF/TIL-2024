@@ -1,4 +1,4 @@
-package queryservice
+package redisqueryservice
 
 import (
 	queryservice "backend/application/queryservice/interface"
@@ -12,7 +12,7 @@ type infra struct {
 	db *redis.Client
 }
 
-func NewRedisQueryService(db *redis.Client) queryservice.Session {
+func NewSession(db *redis.Client) queryservice.Session {
 	return &infra{db: db}
 }
 

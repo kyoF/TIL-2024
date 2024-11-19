@@ -13,7 +13,7 @@ type infra struct {
 	db *redis.Client
 }
 
-func NewRedisPersistance(db *redis.Client) repository.Session {
+func NewSession(db *redis.Client) repository.Session {
 	return &infra{db: db}
 }
 

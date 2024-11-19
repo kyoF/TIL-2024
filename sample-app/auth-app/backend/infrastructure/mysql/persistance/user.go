@@ -9,7 +9,7 @@ type infra struct {
 	db *sql.DB
 }
 
-func NewMySQLPersistance(db *sql.DB) repository.User {
+func NewUser(db *sql.DB) repository.User {
 	return &infra{db: db}
 }
 
