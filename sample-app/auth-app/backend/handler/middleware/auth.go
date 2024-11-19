@@ -7,19 +7,19 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type IMiddleware interface {
-	Auth(next echo.HandlerFunc) echo.HandlerFunc
+type AuthN interface {
+	Authentication(next echo.HandlerFunc) echo.HandlerFunc
 }
 
 type middleware struct {
-	usecase usecase.IUserUsecase
+	usecase usecase.User
 }
 
-func NewMiddleware(usecase usecase.IUserUsecase) IMiddleware {
+func New(usecase usecase.User) AuthN {
 	return &middleware{usecase: usecase}
 }
 
-func (m *middleware) Auth(next echo.HandlerFunc) echo.HandlerFunc {
+func (m *middleware) Authentication(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cookie, err := c.Cookie("session_id")
 		if err != nil {

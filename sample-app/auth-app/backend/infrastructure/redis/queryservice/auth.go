@@ -12,7 +12,7 @@ type infra struct {
 	db *redis.Client
 }
 
-func NewRedisQueryService(db *redis.Client) queryservice.Auth {
+func NewRedisQueryService(db *redis.Client) queryservice.Session {
 	return &infra{db: db}
 }
 

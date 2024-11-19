@@ -10,35 +10,35 @@ import (
 	"time"
 )
 
-type IUserUsecase interface {
+type User interface {
 	Login(name, password string) (string, error)
 	Logout(sessionId string) error
 	Signup(name, password string) error
-    Get(sessionId string) (string, error)
+	Get(sessionId string) (string, error)
 }
 
-type userUsecase struct {
-	userRepo         repository.IUserRepository
-	authRepo         repository.IAuthRepository
-	authQueryService queryservice.Auth
+type user struct {
+	userRepository      repository.User
+	sessionRepository   repository.Session
+	sessionQueryService queryservice.Session
 }
 
-func NewUserUsecase(
-	userRepo repository.IUserRepository,
-	authRepo repository.IAuthRepository,
-	authQueryService queryservice.Auth,
-) IUserUsecase {
-	return &userUsecase{
-		userRepo:         userRepo,
-		authRepo:         authRepo,
-		authQueryService: authQueryService,
+func NewUser(
+	userRepository repository.User,
+	sessionRepository repository.Session,
+	sessionQueryService queryservice.Session,
+) User {
+	return &user{
+		userRepository:      userRepository,
+		sessionRepository:   sessionRepository,
+		sessionQueryService: sessionQueryService,
 	}
 }
 
-func (uc *userUsecase) Login(name, password string) (string, error) {
+func (uc *user) Login(name, password string) (string, error) {
 	passwordvo := valueobject.NewPassword(password)
 
-	storedPassword, err := uc.userRepo.Get(name)
+	storedPassword, err := uc.userRepository.Get(name)
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +49,7 @@ func (uc *userUsecase) Login(name, password string) (string, error) {
 
 	sessionId := fmt.Sprintf("%x", sha256.Sum256([]byte(name+time.Now().String())))
 
-	err = uc.authRepo.Set(sessionId, name, 24*time.Hour)
+	err = uc.sessionRepository.Set(sessionId, name, 24*time.Hour)
 	if err != nil {
 		return "", err
 	}
@@ -57,20 +57,20 @@ func (uc *userUsecase) Login(name, password string) (string, error) {
 	return sessionId, nil
 }
 
-func (uc *userUsecase) Logout(sessinId string) error {
-	err := uc.authRepo.Delete(sessinId)
+func (uc *user) Logout(sessinId string) error {
+	err := uc.sessionRepository.Delete(sessinId)
 	return err
 }
 
-func (uc *userUsecase) Signup(name, password string) error {
+func (uc *user) Signup(name, password string) error {
 	passwordvo := valueobject.NewPassword(password)
 
-	err := uc.userRepo.Insert(name, passwordvo.Hash())
+	err := uc.userRepository.Insert(name, passwordvo.Hash())
 
 	return err
 }
 
-func (uc *userUsecase) Get(sessionId string) (string, error) {
-    name, err := uc.authQueryService.Get(sessionId)
-    return name, err
+func (uc *user) Get(sessionId string) (string, error) {
+	name, err := uc.sessionQueryService.Get(sessionId)
+	return name, err
 }

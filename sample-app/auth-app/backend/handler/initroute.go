@@ -8,7 +8,7 @@ import (
 	"backend/handler/router"
 )
 
-func InitRoute(userRouter router.IUserRouter, customMiddleware customMiddleware.IMiddleware) {
+func InitRoute(userRouter router.User, customMiddleware customMiddleware.AuthN) {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
@@ -17,7 +17,7 @@ func InitRoute(userRouter router.IUserRouter, customMiddleware customMiddleware.
 	e.POST("/login", userRouter.Login())
 	e.POST("/logout", userRouter.Logout())
 	e.POST("/signup", userRouter.Signup())
-	e.GET("/auth", userRouter.Test(), customMiddleware.Auth)
+	e.GET("/auth", userRouter.Test(), customMiddleware.Authentication)
 
 	e.Logger.Fatal(e.Start(":8888"))
 }

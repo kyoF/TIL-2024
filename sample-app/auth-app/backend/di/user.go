@@ -13,14 +13,14 @@ import (
 )
 
 func InjectDependencies(mysql *sql.DB, redis *redis.Client) (
-	router.IUserRouter,
-	middleware.IMiddleware,
+	router.User,
+	middleware.AuthN,
 ) {
-	usecase := usecase.NewUserUsecase(
+	usecase := usecase.NewUser(
 		mysqlpersistance.NewMySQLPersistance(mysql),
 		redispersistance.NewRedisPersistance(redis),
 		queryserviceimpl.NewRedisQueryService(redis),
 	)
-	return router.NewUserRouter(usecase), middleware.NewMiddleware(usecase)
+	return router.NewUser(usecase), middleware.New(usecase)
 
 }

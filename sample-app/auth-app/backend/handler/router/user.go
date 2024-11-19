@@ -9,22 +9,22 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type IUserRouter interface {
+type User interface {
 	Login() echo.HandlerFunc
 	Logout() echo.HandlerFunc
 	Signup() echo.HandlerFunc
 	Test() echo.HandlerFunc
 }
 
-type userRouter struct {
-	usecase usecase.IUserUsecase
+type user struct {
+	usecase usecase.User
 }
 
-func NewUserRouter(usecase usecase.IUserUsecase) IUserRouter {
-	return &userRouter{usecase: usecase}
+func NewUser(usecase usecase.User) User {
+	return &user{usecase: usecase}
 }
 
-func (h *userRouter) Login() echo.HandlerFunc {
+func (h *user) Login() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		user := new(dto.User)
 		if err := c.Bind(user); err != nil {
@@ -48,7 +48,7 @@ func (h *userRouter) Login() echo.HandlerFunc {
 	}
 }
 
-func (h *userRouter) Logout() echo.HandlerFunc {
+func (h *user) Logout() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cookie, err := c.Cookie("session_id")
 		if err != nil {
@@ -74,7 +74,7 @@ func (h *userRouter) Logout() echo.HandlerFunc {
 	}
 }
 
-func (h *userRouter) Signup() echo.HandlerFunc {
+func (h *user) Signup() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		user := new(dto.User)
 		if err := c.Bind(user); err != nil {
@@ -91,7 +91,7 @@ func (h *userRouter) Signup() echo.HandlerFunc {
 	}
 }
 
-func (h *userRouter) Test() echo.HandlerFunc {
+func (h *user) Test() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]string{"message": "Hello World!"})
 	}

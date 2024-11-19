@@ -1,5 +1,5 @@
 package queryservice
 
-type Auth interface {
+type Session interface {
     Get(sessionId string) (string, error)
 }

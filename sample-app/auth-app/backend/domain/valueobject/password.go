@@ -10,9 +10,7 @@ type Password struct {
 }
 
 func NewPassword(password string) Password {
-	return Password{
-		Value: password,
-	}
+	return Password{ Value: password }
 }
 
 func (v *Password) Hash() string {
