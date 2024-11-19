@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"backend/application/queryservice"
+	"backend/application/usecase"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -12,11 +12,11 @@ type IMiddleware interface {
 }
 
 type middleware struct {
-	queryService queryservice.IAuthQueriService
+	usecase usecase.IUserUsecase
 }
 
-func NewMiddleware(queryService queryservice.IAuthQueriService) IMiddleware {
-	return &middleware{queryService: queryService}
+func NewMiddleware(usecase usecase.IUserUsecase) IMiddleware {
+	return &middleware{usecase: usecase}
 }
 
 func (m *middleware) Auth(next echo.HandlerFunc) echo.HandlerFunc {
@@ -27,7 +27,7 @@ func (m *middleware) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		sessionId := cookie.Value
-		name, err := m.queryService.Get(sessionId)
+		name, err := m.usecase.Get(sessionId)
 
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Error checking session ID"})

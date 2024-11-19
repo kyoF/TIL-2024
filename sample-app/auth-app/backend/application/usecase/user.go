@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	queryservice "backend/application/queryservice/interface"
 	"backend/domain/repository"
 	"backend/domain/valueobject"
 	"crypto/sha256"
@@ -13,18 +14,25 @@ type IUserUsecase interface {
 	Login(name, password string) (string, error)
 	Logout(sessionId string) error
 	Signup(name, password string) error
+    Get(sessionId string) (string, error)
 }
 
 type userUsecase struct {
-	userRepo repository.IUserRepository
-	authRepo repository.IAuthRepository
+	userRepo         repository.IUserRepository
+	authRepo         repository.IAuthRepository
+	authQueryService queryservice.Auth
 }
 
 func NewUserUsecase(
 	userRepo repository.IUserRepository,
 	authRepo repository.IAuthRepository,
+	authQueryService queryservice.Auth,
 ) IUserUsecase {
-	return &userUsecase{userRepo: userRepo, authRepo: authRepo}
+	return &userUsecase{
+		userRepo:         userRepo,
+		authRepo:         authRepo,
+		authQueryService: authQueryService,
+	}
 }
 
 func (uc *userUsecase) Login(name, password string) (string, error) {
@@ -60,4 +68,9 @@ func (uc *userUsecase) Signup(name, password string) error {
 	err := uc.userRepo.Insert(name, passwordvo.Hash())
 
 	return err
+}
+
+func (uc *userUsecase) Get(sessionId string) (string, error) {
+    name, err := uc.authQueryService.Get(sessionId)
+    return name, err
 }
